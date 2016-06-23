@@ -276,7 +276,21 @@ p(m_1n_2 + ... + m_{L-1}n_L)
 \end{equation}
 
 \subsection{Approximation of weights in convolutional layers}
-\todo{opisi rezanje konvolucijskega dela.}
+
+With convolutional layers we did not use the same approach. The weights (with 
+convolutional networks more regularly called as kernels) in different layers are 
+usually independent. They share feature maps with their dimensions dependent 
+from each input image. Because of this property we have not found a solution 
+based on matrix factorization that considers all connections that exists in all 
+layers concurrently. 
+
+In turn we used a non-negative matrix factorization (NMF) method 
+for approximation. We used two approaches. One is approximating every 
+kernel separately in every level. In other approach in every layer we reshaped 
+kernels to column vectors and concatenated them into a matrix which we used for 
+approximation with NMF. We used a NMF method from Nimfa 
+library~\citep{Zitnik2012} which handles negative values in input matrix.
+
 
 \section{Factorization-based brain pruning (MFBP)}
 With approximations we determined which weights are better to prune. We pruned
@@ -312,9 +326,8 @@ tri-factorization is available online~\cite{code}.
 \section{Experimental setup}
 
 We evaluated matrix factorization-based brain pruning on 
-MNIST~\cite{lecun-mnisthandwrittendigit-2010} and Cifar-10 ~\cite{...}
-datasets. 
-\todo{citiraj zbirko cifar.}
+MNIST~\cite{lecun-mnisthandwrittendigit-2010} and 
+Cifar-10~\cite{krizhevsky2009learning} datasets. 
 
 We used a “modern” neural network, presented in~\cite{github}. There are two
 main contributions to a modern neural network. One is changing of activation
@@ -348,9 +361,8 @@ implementation of “modern neural net” described above is available
 at~\cite{github}.
 Data fusion algorithm which performs simultaneous matrix
 tri-factorization is available in a python library
-Scikit-fusion~\cite{zitnik2015data}. Algorithm iONMF~\cite{...} was used for 
+Scikit-fusion~\cite{zitnik2015data}. Algorithm NMF~\cite{Zitnik2012} was used for 
 pruning in convolutional layers.
-\todo{Citiraj iONMF od Strazarja.}
 
 
 \section{Results}

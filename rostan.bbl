@@ -99,6 +99,11 @@ Max Jaderberg, Andrea Vedaldi, and Andrew Zisserman.
 \newblock Speeding up convolutional neural networks with low rank expansions.
 \newblock {\em arXiv preprint arXiv:1405.3866}, 2014.
 
+\bibitem{krizhevsky2009learning}
+Alex Krizhevsky and Geoffrey Hinton.
+\newblock Learning multiple layers of features from tiny images.
+\newblock 2009.
+
 \bibitem{lecun-mnisthandwrittendigit-2010}
 Yann LeCun and Corinna Cortes.
 \newblock {MNIST} handwritten digit database.
@@ -177,12 +182,6 @@ Jian Xue, Jinyu Li, and Yifan Gong.
   value decomposition.
 \newblock In {\em INTERSPEECH}, pages 2365--2369, 2013.
 
-\bibitem{yang2014deep}
-Zichao Yang, Marcin Moczulski, Misha Denil, Nando de~Freitas, Alex Smola,
-  Le~Song, and Ziyu Wang.
-\newblock Deep fried convnets.
-\newblock {\em arXiv preprint arXiv:1412.7149}, 2014.
-
 \bibitem{zeiler2014visualizing}
 Matthew~D Zeiler and Rob Fergus.
 \newblock Visualizing and understanding convolutional networks.
@@ -194,6 +193,11 @@ Xiangyu Zhang, Jianhua Zou, Xiang Ming, Kaiming He, and Jian Sun.
   networks.
 \newblock In {\em Proceedings of the IEEE Conference on Computer Vision and
   Pattern Recognition}, pages 1984--1992, 2015.
+
+\bibitem{Zitnik2012}
+Marinka Zitnik and Blaz Zupan.
+\newblock Nimfa: A python library for nonnegative matrix factorization.
+\newblock {\em Journal of Machine Learning Research}, 13:849--853, 2012.
 
 \bibitem{zitnik2015data}
 Marinka Zitnik and Blaz Zupan.
