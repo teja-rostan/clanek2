@@ -44,11 +44,11 @@
 \begin{abstract}
 
 In this paper we present an approach for pruning neural networks, which
-significantly reduces the model size while maintaining its generalization
-performance. We apply a simultaneous matrix tri-factorization to map weight
-matrices to a low-dimensional space, therefore reducing them and partially
-eliminating noise. Factorized models are thus more robust and have a better
-generalization ability.
+significantly reduces the model size and running time while maintaining its 
+generalization performance. We apply a simultaneous matrix tri-factorization 
+to map weight matrices to a low-dimensional space, therefore reducing them 
+and partially eliminating noise. Factorized models are thus more robust and 
+have a better generalization ability.
 
 \end{abstract}
 
@@ -71,7 +71,7 @@ unnecessary calculations as they are using more nodes than necessary. Better
 generalization performance can be achieved only by small networks. They are
 easier to interpret but their training may require a lot of effort. Also too
 small networks are very sensitive to initial conditions and learning parameters
-and and do not generalize well. The most popular approach to
+and do not generalize well. The most popular approach to
 obtain the most optimal architecture of neural network is pruning. Pruning is
 defined as a network trimming within the assumed initial architecture, which is
 larger than necessary. Pruning algorithms are used to remove the redundant
@@ -98,32 +98,22 @@ factorization-based brain pruning (MFBP).
 
 \section{Related work}
 
-The overall time
-required for training a large network and then pruning it to a small size
-compares very favourably with that of simply training a small 
-network~\cite{augasta2013pruning}. Because there is significant redundancy 
-in the parametrization of networks,
+Because there is significant redundancy in the parametrization of networks,
 many researchers found solutions to prune neural networks with possible
 accuracy loss in order to reduce the model size extensively. But were able to
 fine-tune the compressed layers with added learning iterations to recover the
-performance and improve the accuracy back.
-
-In convolutional neural network, about 90\% 
+performance and improve the accuracy back. In convolutional neural network, about 90\% 
 of the model size is taken up by the dense connected layers and more than 90\% 
 of the running time is taken by the convolutional 
 layers~\cite{zeiler2014visualizing}. 
-Compressing the parameters to reduce model size brings the focus upon how to
-prune the dense connected layers since the vast majority of weights reside in
-these layers which results in significant savings.
 
 Compressing the most storage demanding dense connected layers is possible by
 neural network pruning with low-rank matrix factorization
 methods~\cite{bondarenko2014artificial, schmidhuber2015deep, sainath2013low},
 where network pruning has been used both to reduce model size and to reduce
-over-fitting~\cite{han2015learning}. State-of-the-art approaches are Optimal
-Brain Damage~\cite{lecun1989optimal} and Optimal Brain
-Surgeon~\cite{hassibi1993optimal} which open the rich field of studies using
-matrix factorization to prune the networks.
+over-fitting~\cite{han2015learning}. State-of-the-art 
+approaches~\cite{lecun1989optimal, hassibi1993optimal} opened a rich field of 
+studies using matrix factorization to prune the networks.
 
 Besides neural network pruning with matrix factorization many alternatives have
 been used in numerous ways to optimize neural network architecture. One of the
@@ -135,19 +125,14 @@ decompose and reconstruct the model based on the sparseness of the
 original matrices. A simple solution to
 reduce the model size and preserve the generalization ability is to train
 models that have a constant number of simpler neurons which was presented in
-article~\cite{collins2014memory}.
-
-Another examined strong method uses the significance of neurons by evaluating
+article~\cite{collins2014memory}. Another examined strong method uses the 
+significance of neurons by evaluating
 the information on weight variation and consequently prune the insignificant
-nodes. Removing all connections whose weight is lower than a threshold is
-introduced in~\cite{han2015learning}. There the first phase learns which 
+nodes~\cite{han2015learning}. There the first phase learns which 
 connections are important and removes the unimportant ones using multiple 
 iterations. Hashing is also an effective strategy for dimensionality reduction
 while preserving generalization performance~\cite{weinberger2009feature,
-shi2009hash, chen2015compressing}. Another successful method is replacing the 
-fully
-connected layers of the network with an Adaptive Fastfood transform, introduced
-in article~\cite{yang2014deep}, and results in a deep fried convnet. 
+shi2009hash, chen2015compressing}. 
 
 Running time complexity is depended from the computation which is dominated by 
 convolution operations in the lower layers of the model. In contrast to model 
@@ -164,8 +149,7 @@ matrix multiplication
 by reshaping the filter tensor to provide performance as close as possible to 
 matrix 
 multiplication, while using no auxiliary memory~\cite{chetlur2014cudnn}. This 
-avoids the usage 
-of 4 to 6 levels of nested loops and speeds up the 
+avoids the usage of nested loops and speeds up the 
 computation~\cite{chellapilla2006high}. 
 However redundant data and kernels storage has its own cost 
 of extra memory usage as said in article~\cite{anwar2015structured} where they 
@@ -190,38 +174,16 @@ units (ReLU) into account as they minimize the reconstruction error of the
 nonlinear responses, subject to a low-rank constraint which helped to reduce the 
 complexity of filters, therefore reduced computation. 
 
-
-
-
-
-
-\section{Approximation of network weights with simultaneous matrix
-tri-factorization}
-
+\section{Approximation of weights in neural network}
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=.8\linewidth]{globokamreza2.jpg}
-
+\includegraphics[width=.65\linewidth]{globokamreza2.jpg}
 \captionof{figure}{Deep neural network with dense connected layers. Relation
 matrix $W_{i,j}$ stores the weights of connections between neurons at layer $i$
 and $j$.}
-
-%\todo{Edit figure to what sketched in current version. Write W (for weights)
-%instead of R in figure.}
-
 \label{f:globokamreza}
-
 \end{figure}
 
-
-Deep neural network is a feed-forward, artificial neural network with more than
-one or two hidden layers between the input and output
-layer~\ref{f:globokamreza}. The number of nodes in every hidden layer is chosen
-manually. Our main goal was to use more nodes than necessary to prune the
-unnecessary ones later. The pruning was achieved using a low-dimensional
-approximation of original weight matrices to estimate which nodes are batter to
-prune. To approximate the weight matrices, we used simultaneous matrix
-tri-factorization.
 
 Matrix factorization is a technique to search linear representation with
 factorizing. Approximation of matrix with matrix factorization is used to
@@ -230,15 +192,17 @@ approximate the data in low-dimensional space in order to find latent features.
 With ordinary artificial neural network, we have only one hidden layer and
 therefore two weight matrices with sharing dimension. Because of this property,
 we are able to concatenate the matrices through sharing dimension and apply a
-matrix factorization.
-
-With deep neural networks we have a multi-layer architecture where only
+matrix factorization. With deep neural networks~\ref{f:globokamreza} we have a 
+multi-layer architecture where only
 neighbour weight matrices share the same dimension. We can apply co-dependency
 between neighbour weight matrices but we can not apply dependency between, for
 example, first and third weight matrix. Our goal was to consider all relations
-that exist between weight matrices in deep neural network. Simultaneous matrix
-tri-factorization applies our criteria. The theorem of simultaneous matrix 
-tri-factorization~\ref{t:2}. 
+that exist between weight matrices in deep neural network. 
+
+\subsection{Approximation of weights in dense layers}
+Simultaneous matrix
+tri-factorization applies our criteria for pruning in dense connected layers. 
+The theorem of simultaneous matrix tri-factorization~\ref{t:2}. 
 
 
 \begin{theorem}\label{t:2}
@@ -311,11 +275,10 @@ $p$~\cite{sainath2013low}, we require the equation~\ref{eq:2} to hold.
 p(m_1n_2 + ... + m_{L-1}n_L)
 \end{equation}
 
-%\todo{This is valid for one matrix (i.e., layer in the network). Write a
-%general equation for the entire network.}
+\subsection{Approximation of weights in convolutional layers}
+\todo{opisi rezanje konvolucijskega dela.}
 
-%\todo{Should be rewritten with factorization of weights matrices in mind.}
-
+\section{Factorization-based brain pruning (MFBP)}
 With approximations we determined which weights are better to prune. We pruned
 weights which hold followed criteria and were forced to a zero value to be
 considered as pruned:
@@ -323,14 +286,9 @@ considered as pruned:
 $(abs(originalWeight) - abs(approximatedWeight)) >= threshold$
 
 
-% \newpage
-
 The pruning procedure is defined in Algorithm~\ref{alg:MFBP}.
 The code of pruning modern neural network with simultaneous matrix 
 tri-factorization is available online~\cite{code}.
-
-%\todo{Add an algorithm for the pruning procedure, which includes also initial
-%training, and refinement of parameters after each pruning iteration.}
 
 \begin{algorithm}[H]
 \label{alg:MFBP}
@@ -347,70 +305,16 @@ tri-factorization is available online~\cite{code}.
  \caption{Pruning neural network with simultaneous matrix tri-factorization.}
  
 \end{algorithm}
-	
+\todo{dodaj kodo za rezanje konvolucijskega dela}
 
-%\clearpage
-%\begin{small}
-%\label{alg:MFBP}
-%\begin{program}
-%\mbox{\textbf{Matrix factorization based brain pruning.}}
-%\mbox{\textbf{\# Initial training.}}
-%  num\_of\_hidden\_neurons = (num\_of\_attributes + num\_of\_classes) * 2 / 3 
-\# 
-%= 529
-%  num\_of\_hidden\_layers = 2 \# = 4
-%  \FOR i:=0 \TO 100 \DO 
-%     train(trX, trY); 
-%  \OD
-%\mbox{\textbf{\# Simultaneous matrix tri-factorization.}}
-%  rank = num\_of\_classes / 2 \# = 5   
-%  \FOR i:=0 \TO num\_of\_weight\_matrices + 1 \DO
-%     t[i] = fusion.ObjectType('Type ' + str(i), rank)
-%  \OD
-%  \FOR i:=0 \TO num\_of\_weight\_matrices \DO
-%     relations.add(fusion.Relation(weight\_matrix[i].get\_value(), t[i], 
-%t[i+1])) 
-%  \OD
-%  fusionGraph = fusion.FusionGraph()
-%  fusionGraph.add\_relations\_from(relations)
-%  fuser = fusion.Dfmf()
-%  fuser.fuse(fusionGraph) 
-%\mbox{\textbf{\# Compare original weights with approximated and prune.}}
-%  \FOR i:=0 \TO num\_of\_weight\_matrices \DO
-%  	  c[i] = abs(fuser.complete(relations[i])) - 
-%abs(weight\_matrix[i].get\_value()) < threshold
-%      weight\_matrix[i].set\_value(weight\_matrix[i].get\_value() * c[i])
-%  \OD
-%\mbox{\textbf{\# Fine-tuning.}}
-%  \FOR i:=0 \TO 50 \DO 
-%     train(trX, trY); 
-%     \FOR i:=0 \TO num\_of\_weight\_matrices \DO
-%      weight\_matrix[i].set\_value(weight\_matrix[i].get\_value() * c[i])
-%     \OD     
-%  \OD
-%\end{program}
-%\end{small}
-
-
-%\todo{This seems wrong and counterintuitive. Is it really so?}
-
-%\begin{figure}[!ht]
-%\centering 
-%\includegraphics[height=4.5cm]{kriterijrezanja.jpg}
-%\caption{Possible changes of values of weights. Values before pruning (red 
-%circle) and after pruning (blue circle). In a) case, the weight value changes 
-%sign, b) moves closer to zero and c) moves away from zero.}
-%\label{f:spremembeutezi}
-%\end{figure}
 
 
 \section{Experimental setup}
 
-We evaluated matrix factorization-based brain pruning on MNIST (Mixed National
-Institute of Standards and Technology dataset) dataset. The MNIST database of
-handwritten digits 0-9, available in~\cite{lecun-mnisthandwrittendigit-2010},
-has a training set of 60~000 instances and a test set of 10~000 instances. The
-digits have been size-normalized and centered in a fixed-size 28x28 images.
+We evaluated matrix factorization-based brain pruning on 
+MNIST~\cite{lecun-mnisthandwrittendigit-2010} and Cifar-10 ~\cite{...}
+datasets. 
+\todo{citiraj zbirko cifar.}
 
 We used a “modern” neural network, presented in~\cite{github}. There are two
 main contributions to a modern neural network. One is changing of activation
@@ -444,21 +348,27 @@ implementation of “modern neural net” described above is available
 at~\cite{github}.
 Data fusion algorithm which performs simultaneous matrix
 tri-factorization is available in a python library
-Scikit-fusion~\cite{zitnik2015data}. To measure our results, we used a machine
+Scikit-fusion~\cite{zitnik2015data}. Algorithm iONMF~\cite{...} was used for 
+pruning in convolutional layers.
+\todo{Citiraj iONMF od Strazarja.}
+
+
+\section{Results}
+ To measure our results with area under ROC 
+curve (AUC), we used a machine
 learning library Scikit-learn~\cite{scikit-learn}.
 
-To estimate and analyse our results, we trained and tested six neural networks: 
-three 
-ordinary neural network with two hidden layers and three deep neural network 
-with four 
+\subsection{Results on dense layers}
+We trained six neural networks: 
+three with two hidden layers and three with four 
 hidden layers. Every neural network had 100 iterations available to learn. After 
 learning, the simultaneous matrix tri-factorization was performed to prune 
 weights. After, 50 iterations of fine-tuning was used to recover the non-pruned 
 weight values which have been biased by the pruned weights from before 
-pruning. 
-
-\section{Results}
-The reported results are measured with area under ROC curve (AUC) on test set 
+pruning. The pruned weights were forced to stay at zero (to keep 
+them pruned), so to keep the dimensionality reduction. 
+Every type of network had different amount of pruning. 
+The reported results are measured  on test set 
 shown in figure~\ref{f:results}. 
 
 \begin{figure}[!ht]
@@ -468,17 +378,12 @@ shown in figure~\ref{f:results}.
 \label{f:results}
 \end{figure}
 
-The results show six networks with two types (with two hidden layers and with 
-four hidden layers). Every type of network had different amount of pruning. 
-Pruning happened at 100th. Next 
-50 iterations were meant for fine-tuning, where the non-pruned weights were able 
-to recover and adapt. The pruned weights were forced to stay at zero (to keep 
-them pruned), so to keep the dimensionality reduction. From results we can see 
+From results we can see 
 that the network which had less amount of pruning were able to recover the 
 accuracy fast (after few iterations). With higher amount of pruning, 
 the non-pruned weights needed more iterations to recover to the accuracy before 
 pruning, meanwhile the network with two hidden layers, which was pruned the most 
-(for 93,83~\%) were not able to recover as the amount of pruning was too high.
+(for 93,83~\%) was not able to recover as the amount of pruning was too high.
 From table~\ref{t:results} we can see that in most cases, the pruning resulted
 in higher accuracy than before pruning. 
 
@@ -506,6 +411,9 @@ in higher accuracy than before pruning.
 \label{t:results}
 \end{table}
 
+\subsection{Results on convolutional layers}
+\todo{Dodaj rezultate na konvolucijskih nivojih.}
+
 \newpage 
 \section{Discussion and conclusion}
 In this paper, we have addressed the size complexity of applying simultaneous 
@@ -523,18 +431,16 @@ weights.
 
 For future work, we will apply simultaneous matrix tri-factorization on 
 convolutional neural networks.
+\todo{Nadgradi zakljucek.}
+\todo{Preglej vse...}
 
 
-
-
-\subsubsection*{Acknowledgments}
-
-
-\subsubsection*{References}
+%\subsubsection*{Acknowledgments}
+%\subsubsection*{References}
 \bibliography{literature}
 \bibliographystyle{plain}
 
-%\todos
+\todos
 
 \end{document}
 
