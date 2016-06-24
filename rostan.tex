@@ -55,9 +55,8 @@ have a better generalization ability.
 \section{Introduction}
 
 Deep neural networks are a popular tool that is being used to solve widely
-different problems. The advantages of neural networks are that they are
-relatively easy to use and can approximate any function, regardless of its
-linearity. They are widely used for complex or abstract problems such as image,
+different problems. They are widely used for complex or abstract problems 
+such as image,
 sound and text recognition. However, they are computationally intensive to
 train and are known for black box problem as they will not tell you why they
 reached a certain conclusion. Success of neural networks largely depends on
@@ -79,20 +78,21 @@ connections while maintaining the networks performance. So one can use the
 larger networks for training and its generalization can be improved by the
 process of pruning~\cite{augasta2013pruning}.
 
-More recent researches have tackled upon an issue of deep neural network and
-deep convolutional neural networks which is that they involve many layers with
+More recent researches have tackled upon an issue of deep learning which is 
+that they involve many layers with
 millions of parameters, making the size of the network model to be extremely
-large to store. This prohibits the usage on resource limited hardware
+large to store and with high computation cost. This prohibits the usage on 
+resource limited hardware
 especially mobile devices or other embedded devices even though deep neural
 networks are increasingly used in applications suited for mobile
 devices~\cite{DBLP:journals/corr/GongLYB14}.
 
 In this work we present a novel approach using low-dimensional matrix
-factorization. Because we have more than one weight matrix and because the
-weight matrices between the layers in a neural network are dependent with their
-neighbour matrices, we used an upgraded approach of matrix factorization, named
-simultaneous matrix tri-factorization, also known as data fusion. Pruning
-neural network with simultaneous matrix tri-factorization was names as matrix
+factorization. With pruning we wanted to acknowledge all relations that exists 
+in network.
+We used simultaneous matrix tri-factorization, also known as data fusion for 
+dense layers and non-negative matrix factorization for convolutional layers. 
+Pruning with these approaches was named matrix
 factorization-based brain pruning (MFBP).
 
 
@@ -102,7 +102,8 @@ Because there is significant redundancy in the parametrization of networks,
 many researchers found solutions to prune neural networks with possible
 accuracy loss in order to reduce the model size extensively. But were able to
 fine-tune the compressed layers with added learning iterations to recover the
-performance and improve the accuracy back. In convolutional neural network, about 90\% 
+performance and improve the accuracy back. In convolutional neural network, 
+about 90\% 
 of the model size is taken up by the dense connected layers and more than 90\% 
 of the running time is taken by the convolutional 
 layers~\cite{zeiler2014visualizing}. 
@@ -279,17 +280,29 @@ p(m_1n_2 + ... + m_{L-1}n_L)
 
 With convolutional layers we did not use the same approach. The weights (with 
 convolutional networks more regularly called as kernels) in different layers are 
-usually independent. They share feature maps with their dimensions dependent 
+usually independent as they share feature maps with their dimensions dependent 
 from each input image. Because of this property we have not found a solution 
 based on matrix factorization that considers all connections that exists in all 
 layers concurrently. 
 
 In turn we used a non-negative matrix factorization (NMF) method 
-for approximation. We used two approaches. One is approximating every 
-kernel separately in every level. In other approach in every layer we reshaped 
+for approximation. NMF is
+a recent method for finding such a representation. Given a non-negative data 
+matrix $W$ (kernel), NMF finds
+an approximate factorization $W \approx UV$ into non-negative factors $U$ and 
+$V$. The non-negativity
+constraints make the representation purely additive (allowing no subtractions), 
+in contrast to many
+other linear representations~\cite{hoyer2004non}. We used two approaches:
+\begin{itemize}
+\item In every layer we approximated every kernel separately with NMF. 
+\item In every layer we reshaped 
 kernels to column vectors and concatenated them into a matrix which we used for 
-approximation with NMF. We used a NMF method from Nimfa 
-library~\citep{Zitnik2012} which handles negative values in input matrix.
+approximation with NMF (used in pseudocode~\ref{alg:MFBP}).
+\end{itemize} Because the kernels in network are not constrained to non-negative 
+values, we used a NMF method from Nimfa 
+library~\citep{Zitnik2012} which with preprocessing handles negative values in 
+input matrix.
 
 
 \section{Factorization-based brain pruning (MFBP)}
@@ -299,7 +312,6 @@ considered as pruned:
 
 $(abs(originalWeight) - abs(approximatedWeight)) >= threshold$
 
-
 The pruning procedure is defined in Algorithm~\ref{alg:MFBP}.
 The code of pruning modern neural network with simultaneous matrix 
 tri-factorization is available online~\cite{code}.
@@ -308,18 +320,25 @@ tri-factorization is available online~\cite{code}.
 \label{alg:MFBP}
  \KwData{weight matrices $W$ of learned neural network}
  \KwResult{pruned weight matrices $Wp$}
- \For{every weight matrix $W$}{
+ \For{every convolutional layer}{
+   reshape kernels to column vectors\;
+   concatenate kernels into a matrix $W_i$\;
+   $A_i$ := approximation of $W_i$ with NMF\;
+ }
+ \For{every weight matrix $W_i$ in dense connected layers}{
   make relations\;
   add to relations graph $R$;
  }
  apply simultaneous matrix tri-factorization on relations graph $R$\;
-  \For{every weight matrix $W$}{
-    $Wp_i$ = $W_i$ * (absolute($W_i$) - absolute($R_i$) $<$ threshold)
+ \For{every weight matrix $W$ in relations graph $R$}{
+  $A_i$ := approximations of $W_i$\;
  }
- \caption{Pruning neural network with simultaneous matrix tri-factorization.}
+ \For{every approximated weight matrix $A$}{
+    $Wp_i$ = $W_i$ * (absolute($W_i$) - absolute($A_i$) $<$ threshold)\;
+ }
+ \caption{Pruning neural network with matrix factorization.}
  
 \end{algorithm}
-\todo{dodaj kodo za rezanje konvolucijskega dela}
 
 
 
@@ -361,12 +380,13 @@ implementation of “modern neural net” described above is available
 at~\cite{github}.
 Data fusion algorithm which performs simultaneous matrix
 tri-factorization is available in a python library
-Scikit-fusion~\cite{zitnik2015data}. Algorithm NMF~\cite{Zitnik2012} was used for 
+Scikit-fusion~\cite{zitnik2015data}. Algorithm NMF~\cite{Zitnik2012} was used 
+for 
 pruning in convolutional layers.
 
 
 \section{Results}
- To measure our results with area under ROC 
+To measure our results with area under ROC 
 curve (AUC), we used a machine
 learning library Scikit-learn~\cite{scikit-learn}.
 
@@ -424,27 +444,70 @@ in higher accuracy than before pruning.
 \end{table}
 
 \subsection{Results on convolutional layers}
-\todo{Dodaj rezultate na konvolucijskih nivojih.}
+We trained a network with three convolutional layers and one dense connected 
+layer. We introduced also a CIFAR-10 dataset in this approach. We used two 
+previously mentioned approaches of kernel pruning with NMF. We also used 
+multiple iterations of pruning, where pruning gets stronger with every 
+iteration. Iterations between pruning were reserved for recovering of weights 
+that survived. A recovering period was not hard-coded but lasted until there 
+were five iterations of recovering where the neurons did not improve for a small 
+amount.  
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=1\linewidth]{convresults.png}
+\captionof{figure}{AUC results of two approaches on MNIST and CIFAR dataset.}
+\label{f:results_conv}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=.8\linewidth]{convdegree.png}
+\captionof{figure}{Degree of pruning.}
+\label{f:degree_conv}
+\end{figure}
+
+The results in~\ref{f:results_conv} show four AUC measures, with two approaches 
+and two datasets. Pruning occurs at steps where there are coloured dots with a 
+number that represents degree of pruning at that step. A 
+figure~\ref{f:degree_conv}
+separately shows the degree of pruning when pruning occurs.
+
+With results we came to similar conclusions. The network was able to recover 
+lost accuracy to some amount. With stronger pruning, the recovery was less 
+effective. When we pruned above 80~\% there was a possibility that we lost all 
+information that was learned. First, we need to consider that usually, the first 
+convolution layer has fewer parameters than the following layers. Secondly it 
+directly performs on the input layer and is therefore more sensitive to pruning. 
+These reasons may affect the accuracy loss the most. In future, we might 
+consider to protect the first layer from strong pruning.
+
 
 \newpage 
 \section{Discussion and conclusion}
-In this paper, we have addressed the size complexity of applying simultaneous 
-matrix tri-factorization to compress feed-forward neural network with two and 
-four hidden layers. Our work studied how to use simultaneous matrix 
-tri-factorization to compress a significant amount of artificial neural network 
-and deep neural network in order to save storage without the loss of accuracy. 
-We applied simultaneous matrix tri-factorization on weight matrices and use 
+In this paper, we have addressed size complexity by applying simultaneous 
+matrix tri-factorization to compress network without loss of accuracy. We have 
+addressed time complexity 
+by applying NMF on kernels to speed up computations. Pruning values in kernels 
+has the potential to bridge the gap between pruning and its computational 
+advantages. Combined with convolution lowering, it can significantly reduce the 
+computational cost~\cite{anwar2015structured}.
+
+We applied matrix factorization on weight matrices and used 
 approximated weights to prune the weights which values moved closer to zero for 
 the greatest amount. This allowed us to reduce the number of parameters of 
 networks between 60-90~\% without sacrificing the accuracy or sacrificing for 
-the negligible amount. The reduction of the parameters of neural network for 
-higher amount required more iterations of fine-tuning to recover the non-pruned 
+the negligible amount. 
+
+The reduction of the parameters of neural network with 
+higher amount of pruning required more iterations of fine-tuning to recover the 
+non-pruned 
 weights. 
 
-For future work, we will apply simultaneous matrix tri-factorization on 
-convolutional neural networks.
-\todo{Nadgradi zakljucek.}
-\todo{Preglej vse...}
+For future work, we will combine pruning on convolutional and dense connected 
+layers on a bigger and more serious networks and datasets.
+We are planning on conducting experiments on evaluating its effectiveness for 
+computational benefits.
 
 
 %\subsubsection*{Acknowledgments}
@@ -452,8 +515,14 @@ convolutional neural networks.
 \bibliography{literature}
 \bibliographystyle{plain}
 
-\todos
+%\todos
 
 \end{document}
+
+
+
+
+
+
 
 

@@ -94,6 +94,11 @@ Geoffrey Hinton.
 \newblock Lecture 6a overview of mini-batch gradient descent, 2014.
 \newblock Avaliable: \url{www.cs.toronto.edu/} [Reached 17.1.2016].
 
+\bibitem{hoyer2004non}
+Patrik~O Hoyer.
+\newblock Non-negative matrix factorization with sparseness constraints.
+\newblock {\em Journal of machine learning research}, 5(Nov):1457--1469, 2004.
+
 \bibitem{jaderberg2014speeding}
 Max Jaderberg, Andrea Vedaldi, and Andrew Zisserman.
 \newblock Speeding up convolutional neural networks with low rank expansions.
