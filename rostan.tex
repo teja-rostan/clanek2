@@ -19,7 +19,7 @@
 
 
 
-\title{Neural network pruning with simultaneous matrix tri-factorization}
+\title{Neural network pruning with simultaneous matrix tri-factorization and non-negative matrix factorization}
 \author{Teja Ro\v{s}tan}
 %\template is for anonymous submission
 
@@ -62,11 +62,13 @@ train and are known for black box problem as they will not tell you why they
 reached a certain conclusion. Success of neural networks largely depends on
 their architecture. While the size of the input layer and the output layer is
 known, the number of hidden layers and the number of nodes in each hidden layer
-depends on the complexity of the problem~\cite{augasta2013pruning}. Generally,
+depends on the complexity of the problem~\cite{augasta2013pruning}. 
+
+Generally,
 a network with large number of hidden nodes is able to learn fast and avoids
 local minima, but when a network is oversized, the network may overfit the
 training data and lose its generalization ability while still having
-unnecessary calculations as they are using more nodes than necessary. Better
+more calculations as they are using more nodes than necessary. Better
 generalization performance can be achieved only by small networks. They are
 easier to interpret but their training may require a lot of effort. Also too
 small networks are very sensitive to initial conditions and learning parameters
@@ -102,7 +104,7 @@ Because there is significant redundancy in the parametrization of networks,
 many researchers found solutions to prune neural networks with possible
 accuracy loss in order to reduce the model size extensively. But were able to
 fine-tune the compressed layers with added learning iterations to recover the
-performance and improve the accuracy back. In convolutional neural network, 
+performance and improve the accuracy back. In convolutional neural network (CNN), 
 about 90\% 
 of the model size is taken up by the dense connected layers and more than 90\% 
 of the running time is taken by the convolutional 
@@ -161,18 +163,18 @@ In articles~\cite{jaderberg2014speeding, rigamonti2013learning} they use an
 intuition that CNN filter maps can be approximated using a low rank basis of
 filters that are separable in the spatial domain where 
 in~\cite{jaderberg2014speeding}
-substantial speedups can be achieved by also exploiting the cross-channel 
+substantial speed ups can be achieved by also exploiting the cross-channel 
 redundancy to perform low-rank decomposition in the
 channel dimension. 
 Alternatively in article~\cite{denton2014exploiting} they compressed each 
 convolutional layer by finding an appropriate low-rank approximation with 
-considering several elementary tensor decompositions based on singular value 
-decompositions, as well as filter clustering methods to take advantage of 
+considering several elementary tensor decompositions based on SVDs, 
+as well as filter clustering methods to take advantage of 
 similarities between learned features.
 
-Method, presented in article~\cite{zhang2015efficient}, takes the nonlinear 
+Method, presented in article~\cite{zhang2015efficient}, takes the non-linear 
 units (ReLU) into account as they minimize the reconstruction error of the 
-nonlinear responses, subject to a low-rank constraint which helped to reduce the 
+non-linear responses, subject to a low-rank constraint which helped to reduce the 
 complexity of filters, therefore reduced computation. 
 
 \section{Approximation of weights in neural network}
@@ -186,14 +188,14 @@ and $j$.}
 \end{figure}
 
 
-Matrix factorization is a technique to search linear representation with
-factorizing. Approximation of matrix with matrix factorization is used to
+Matrix factorization (MF) is a technique to search linear representation with
+factorizing. Approximation of matrix with MF is used to
 approximate the data in low-dimensional space in order to find latent features.
 
 With ordinary artificial neural network, we have only one hidden layer and
 therefore two weight matrices with sharing dimension. Because of this property,
-we are able to concatenate the matrices through sharing dimension and apply a
-matrix factorization. With deep neural networks~\ref{f:globokamreza} we have a 
+we are able to concatenate the matrices through sharing dimension and apply MF.
+With deep neural networks~\ref{f:globokamreza} we have a 
 multi-layer architecture where only
 neighbour weight matrices share the same dimension. We can apply co-dependency
 between neighbour weight matrices but we can not apply dependency between, for
@@ -278,8 +280,8 @@ p(m_1n_2 + ... + m_{L-1}n_L)
 
 \subsection{Approximation of weights in convolutional layers}
 
-With convolutional layers we did not use the same approach. The weights (with 
-convolutional networks more regularly called as kernels) in different layers are 
+With convolutional layers we did not use the same approach. The weights (in CNN 
+more regularly called as kernels) in different layers are 
 usually independent as they share feature maps with their dimensions dependent 
 from each input image. Because of this property we have not found a solution 
 based on matrix factorization that considers all connections that exists in all 
@@ -314,7 +316,7 @@ $(abs(originalWeight) - abs(approximatedWeight)) >= threshold$
 
 The pruning procedure is defined in Algorithm~\ref{alg:MFBP}.
 The code of pruning modern neural network with simultaneous matrix 
-tri-factorization is available online~\cite{code}.
+tri-factorization and NMF is available online~\cite{code}.
 
 \begin{algorithm}[H]
 \label{alg:MFBP}
@@ -381,8 +383,7 @@ at~\cite{github}.
 Data fusion algorithm which performs simultaneous matrix
 tri-factorization is available in a python library
 Scikit-fusion~\cite{zitnik2015data}. Algorithm NMF~\cite{Zitnik2012} was used 
-for 
-pruning in convolutional layers.
+for pruning of convolutional layers.
 
 
 \section{Results}
@@ -392,8 +393,8 @@ learning library Scikit-learn~\cite{scikit-learn}.
 
 \subsection{Results on dense layers}
 We trained six neural networks: 
-three with two hidden layers and three with four 
-hidden layers. Every neural network had 100 iterations available to learn. After 
+three with two hidden layers (NN\_2HL) and three with four 
+hidden layers (NN\_4HL). Every neural network had 100 iterations available to learn. After 
 learning, the simultaneous matrix tri-factorization was performed to prune 
 weights. After, 50 iterations of fine-tuning was used to recover the non-pruned 
 weight values which have been biased by the pruned weights from before 
@@ -493,7 +494,7 @@ has the potential to bridge the gap between pruning and its computational
 advantages. Combined with convolution lowering, it can significantly reduce the 
 computational cost~\cite{anwar2015structured}.
 
-We applied matrix factorization on weight matrices and used 
+We applied MF on weight matrices and used 
 approximated weights to prune the weights which values moved closer to zero for 
 the greatest amount. This allowed us to reduce the number of parameters of 
 networks between 60-90~\% without sacrificing the accuracy or sacrificing for 
